@@ -1,62 +1,28 @@
-import express from "express"
-import cors from "cors"
+const express = require('express');
+const path = require('path');
+const exphbs = require('express=handlebars')
+const logger = require('../middleware/logger')
 
 
-const app = express()
+const app = express();
 
-app.use(express.static(path.join(__dirname, 'source')))
+// init middle
+// app.use(logger);
 
-const PORT = process.env.PORT || 4000
+// Handlebars Middleware
+app.engine('handlebars', exhphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars')
 
+// body parser middleware
 app.use(express.json())
-app.use(cors())
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (request, response) => {
-    response.send('<h2>Hello World!!</h2>')
-})
+// Static folder
+app.use(express.static(path.join(__dirname, 'source')));
 
-const office = [
-    {
-      id: 1,
-      type: "federal",
-      name: "President",
-    },
-    {
-      id: 2,
-      type: "legislative",
-      name: "Senator",
-    },
-    {
-      id: 3,
-      type: "state",
-      name: "Governor",
-    },
-    {
-      id: 4,
-      type: "local government",
-      name: "Chairman",
-    },
-    {
-      id: 5,
-      type: "federal",
-      name: "Vice President",
-    },
-    {
-      id: 6,
-      type: "state",
-      name: "Deputy Governor",
-    },
-  ];
+// offices api route
+app.use('/api/office', require('../routers/api/offices')); 
 
-app.get('/app/offices', (request, response) => {
-    response.json(office)
-})
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () =>  {
-    console.log(`server is running on http://localhost:${PORT}`)
-})
-
-app.post('./post', (request, response) => {
-    response.json(request.body)
-})
+app.listen(PORT, () => (console.log (`Server is running on http://localhost:${PORT}`)));
